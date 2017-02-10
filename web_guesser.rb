@@ -12,8 +12,12 @@ get '/' do
 		message = arr[0]
 		background = arr[1]
 	end
+	if params['cheat']=="true"
+		puts "here"
+		cheat_message = "Cheat mode unlocked. The secret number is #{@@num}"
+	end
 	erb :index, :locals => {:num => @@num, 
-		:message => message, :background => background}
+		:message => message, :background => background, :cheat_message => cheat_message}
 	#throw params.inspect
 end
 
