@@ -1,38 +1,55 @@
 require 'sinatra'
 require 'sinatra/reloader'
 
-NUM = rand(0..100)
-
+@@num = rand(0..100)
+@@guesses_remaining = 5
 
 
 get '/' do 
-
-	guess = params['guess'].to_i
-	message = check_guess(guess)[0]
-	background = check_guess(guess)[1]
-	erb :index, :locals => {:num => NUM, 
+	if !params['guess'].nil?
+		guess = params['guess'].to_i
+		arr = check_guess(guess)
+		message = arr[0]
+		background = arr[1]
+	end
+	erb :index, :locals => {:num => @@num, 
 		:message => message, :background => background}
 	#throw params.inspect
 end
 
 def check_guess(guess)
-	#puts guess-NUM
-	if guess ==NUM
+	if guess ==@@num
 		message = "You got it right!"
 		background = "background: green"
-	elsif guess-NUM > 5
+		message = "You WON! A new number has been generated."
+		@@num = rand(0..100)
+		@@guesses_remaining = 5
+		return [message,background]
+	elsif guess-@@num > 5
 		message = "Way too high!"
 		background = "background: red"
-	elsif guess-NUM < -5
+	elsif guess-@@num < -5
+				puts guess
 		message = "Way too low!"
 		background = "background: red"
-	elsif guess-NUM >0
+	elsif guess-@@num >0
 		message = "Too high!"
 		background = "background: pink"
-	elsif guess-NUM <0
+	elsif guess-@@num <0
 		message = "Too low!"
 		background = "background: pink"
+	else
+		message = ""
+		background = ""
 	end
+	@@guesses_remaining -= 1
+
+	if @@guesses_remaining == 0
+		message = "You lost! A new number has been generated."
+		@@num = rand(0..100)
+		@@guesses_remaining = 5
+	end
+
 	[message,background]
 end
 
